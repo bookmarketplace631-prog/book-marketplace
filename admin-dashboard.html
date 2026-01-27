@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+        <div class="dashboard-buttons">
+            <button id="shop-requests-btn">Shop Requests</button>
+            <button id="manage-shops-btn">Manage Shops</button>
+            <button id="manage-students-btn">Manage Students</button>
+            <button id="manage-orders-btn">Manage Orders</button>
+            <button id="bulk-approve-btn">Bulk Approve Shops</button>
+            <button id="export-orders-btn">Export Orders</button>
+            <button id="export-shops-btn">Export Shops</button>
+        </div>
+        
+        <div id="shop-requests-section" style="display: none;">
+            <h2>Shop Requests</h2>
+            <div id="shops-list"></div>
+        </div>
+        
+        <div id="manage-shops-section" style="display: none;">
+            <h2>Manage Shops</h2>
+            <select id="city-select">
+                <option value="">Select City</option>
+            </select>
+            <div id="city-shops-list"></div>
+            <div id="shop-analytics" style="display: none;">
+                <h3>Shop Analytics</h3>
+                <div id="analytics-data"></div>
+                <button id="generate-payment">Generate Payment Request</button>
+            </div>
+        </div>
+        
+        <div id="manage-students-section" style="display: none;">
+            <h2>Manage Students</h2>
+            <div id="students-list"></div>
+        </div>
+        
+        <div id="manage-orders-section" style="display: none;">
+            <h2>Manage Orders</h2>
+            <div id="orders-list"></div>
+        </div>
+    </div>
+    <h2>Analytics</h2>
+<p>Total Shops: <span id="total-shops">0</span></p>
+<p>Verified Shops: <span id="verified-shops">0</span></p>
+<p>Total Books: <span id="total-books">0</span></p>
+<p>Total Orders: <span id="total-orders">0</span></p>
+<p>Total Revenue: ₹<span id="total-revenue">0</span></p>
+<p>Average Shop Rating: <span id="avg-rating">0</span></p>
+
+<h3>Top Selling Books</h3>
+<ul id="top-books"></ul>
+
+<h3>Monthly Revenue (Last 6 Months)</h3>
+<ul id="monthly-revenue"></ul>
+<h2>Shops</h2>
+    <table>
+  <thead>
+    <tr>
+      <th>Shop Name</th>
+      <th>Owner</th>
+      <th>Phone</th>
+      <th>City</th>
+      <th>Rating</th>
+      <th>Verified</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody id="shops-table"></tbody>
+</table>
+    <script src="js/admin-dashboard.js"></script>
+    <footer>
+        <p>&copy; 2026 My Book Marketplace. All rights reserved.</p>
+    </footer>
+</body>
+</html>

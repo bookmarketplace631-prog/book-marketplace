@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Book - Shop Profile</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <h2>Shop Dashboard</h2>
+        <a href="shop-dashboard.html">Dashboard</a>
+        <a href="manage-books.html">Manage Books</a>
+        <a href="incoming-orders.html">Incoming Orders</a>
+        <a href="order-history.html">Order History</a>
+        <a href="shop-profile.html" class="active">Edit Shop Profile</a>
+        <a href="#" id="logout">Logout</a>
+    </div>
+    <div class="main-content">
+        <header>
+            <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+            <h1>My Book - Shop Profile</h1>
+        </header>
+    <main>
+        <h2>Edit Shop Profile</h2>
+        <form id="profile-form" enctype="multipart/form-data">
+            <label for="shop_name">Shop Name:</label>
+            <input type="text" id="shop_name" required>
+
+            <label for="owner_name">Owner Name:</label>
+            <input type="text" id="owner_name" required>
+
+            <label for="phone">Phone:</label>
+            <input type="text" id="phone" required>
+
+            <label for="address">Address:</label>
+            <textarea id="address" required></textarea>
+
+            <label for="city">City:</label>
+            <input type="text" id="city" required>
+
+            <label for="logo">Logo:</label>
+            <input type="file" id="logo" accept="image/*">
+            <img id="current-logo" style="width: 100px; height: 100px;">
+
+            <label for="banner">Banner:</label>
+            <input type="file" id="banner" accept="image/*">
+            <img id="current-banner" style="width: 200px; height: 100px;">
+
+            <button type="submit">Update Profile</button>
+        </form>
+
+        <h2>Notifications</h2>
+        <div id="notifications-list"></div>
+    </main>
+    </div>
+    <footer>
+        <p>&copy; 2026 My Book Marketplace. All rights reserved.</p>
+    </footer>
+    <script src="js/shop-profile-edit.js"></script>
+</body>
+</html>

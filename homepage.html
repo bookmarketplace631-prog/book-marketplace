@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Book - Find Your Books Across India</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <h2>My Book</h2>
+        <a href="homepage.html" class="active">Home</a>
+        <a href="student-login.html">Student Login</a>
+        <a href="student-register.html">Student Register</a>
+        <a href="shop-login.html">Shop Login</a>
+        <a href="my-orders.html">My Orders</a>
+        <a href="cart.html">Cart</a>
+        <a href="student-profile.html">My Profile</a>
+        <a href="wishlist.html">Wishlist</a>
+    </div>
+    <div class="main-content">
+        <header>
+            <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+            <h1>My Book - Find Your Books Across India</h1>
+        </header>
+        <main>
+    <main>
+        <section class="intro-section">
+            <h1>Find Your Books Across India</h1>
+            <p>Discover affordable used books from verified local shops. Quality, convenience, and trust in every purchase.</p>
+            <a href="#filters-section" class="btn btn-primary">Start Searching</a>
+            <a href="shop-login.html" class="btn btn-secondary">Join as Shop Owner</a>
+        </section>
+        <section id="filters-section">
+            <h2>Find Your Books</h2>
+            <form id="search-form" class="search-form">
+                <div class="form-row">
+                    <div>
+                        <label for="city-search">Select Your City (Mandatory):</label>
+                        <div class="city-search-container">
+                            <input type="text" id="city-search" placeholder="Search for your city..." autocomplete="off" required>
+                            <div id="city-dropdown" class="city-dropdown">
+                                <!-- Cities will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        <input type="hidden" id="city-select" name="city" required>
+                    </div>
+                    <div>
+                        <label for="category-select">Category (Optional):</label>
+                        <select id="category-select">
+                            <option value="">All</option>
+                            <option value="academic">Academic</option>
+                            <option value="non-academic">Non-Academic</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="grade-select">Select Your Grade (Optional):</label>
+                        <select id="grade-select">
+                            <option value="">Choose a grade...</option>
+                            <!-- School grades -->
+                            <option value="1">Grade 1</option>
+                            <option value="2">Grade 2</option>
+                            <option value="3">Grade 3</option>
+                            <option value="4">Grade 4</option>
+                            <option value="5">Grade 5</option>
+                            <option value="6">Grade 6</option>
+                            <option value="7">Grade 7</option>
+                            <option value="8">Grade 8</option>
+                            <option value="9">Grade 9</option>
+                            <option value="10">Grade 10</option>
+                            <option value="11">Grade 11</option>
+                            <option value="12">Grade 12</option>
+                            <!-- College options -->
+                            <option value="medical">Medical</option>
+                            <option value="finance">Finance</option>
+                            <option value="engineering">Engineering</option>
+                            <option value="law">Law</option>
+                            <option value="arts">Arts</option>
+                            <option value="science">Science</option>
+                            <option value="commerce">Commerce</option>
+                            <!-- Add more as needed -->
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label for="subject-select">Select Subject (Optional):</label>
+                        <select id="subject-select">
+                            <option value="">Choose a subject...</option>
+                            <!-- General subjects; can be filtered by grade later -->
+                            <option value="Math">Math</option>
+                            <option value="Science">Science</option>
+                            <option value="English">English</option>
+                            <option value="History">History</option>
+                            <option value="Geography">Geography</option>
+                            <option value="Physics">Physics</option>
+                            <option value="Chemistry">Chemistry</option>
+                            <option value="Biology">Biology</option>
+                            <option value="Economics">Economics</option>
+                            <option value="Accountancy">Accountancy</option>
+                            <!-- Add more as needed -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="condition-select">Condition (Optional):</label>
+                        <select id="condition-select">
+                            <option value="">Any</option>
+                            <option value="new">New</option>
+                            <option value="used">Used</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label for="price-min">Min Price (₹):</label>
+                        <input type="number" id="price-min" placeholder="0">
+                    </div>
+                    <div>
+                        <label for="price-max">Max Price (₹):</label>
+                        <input type="number" id="price-max" placeholder="10000">
+                    </div>
+                    <div>
+                        <label for="sort-select">Sort By:</label>
+                        <select id="sort-select">
+                            <option value="">Relevance</option>
+                            <option value="price_asc">Price: Low to High</option>
+                            <option value="price_desc">Price: High to Low</option>
+                            <option value="rating">Rating</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div style="flex: 2;">
+                        <label for="search-input">Search for Book Name or Stationary:</label>
+                        <input type="text" id="search-input" placeholder="e.g., Algebra Book or XYZ Stationary">
+                    </div>
+                    <div style="align-self: end;">
+                        <button type="submit" id="search-btn" class="btn btn-primary">Search</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+        <section id="results-section" style="display: none;">
+            <h3>Search Results</h3>
+            <div id="results-list"></div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2026 My Book Marketplace. All rights reserved.</p>
+    </footer>
+    </div>
+    <script src="js/search.js"></script>
+</body>
+</html>

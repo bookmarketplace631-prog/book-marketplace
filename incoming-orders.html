@@ -1,0 +1,32 @@
+<!-- filepath: c:\Users\Dell\Desktop\vishv\incoming-orders.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Book - Incoming Orders</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <h2>Shop Dashboard</h2>
+        <a href="shop-dashboard.html">Dashboard</a>
+        <a href="manage-books.html">Manage Books</a>
+        <a href="incoming-orders.html" class="active">Incoming Orders</a>
+        <a href="order-history.html">Order History</a>
+        <a href="shop-profile.html">Edit Shop Profile</a>
+        <a href="#" id="logout">Logout</a>
+    </div>
+    <div class="main-content">
+        <header>
+            <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+            <h1>My Book - Incoming Orders</h1>
+        </header>
+    <main>
+        <h2>Pending Orders</h2>
+        <div id="orders-list"></div>
+    </main>
+    </div>
+    <script src="js/incoming-orders.js"></script>
+</body>
+</html>

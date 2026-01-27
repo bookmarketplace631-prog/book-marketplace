@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Book - Student Profile</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <h2>My Book</h2>
+        <a href="homepage.html">Home</a>
+        <a href="student-login.html">Student Login</a>
+        <a href="student-register.html">Student Register</a>
+        <a href="shop-login.html">Shop Login</a>
+        <a href="my-orders.html">My Orders</a>
+        <a href="cart.html">Cart</a>
+        <a href="student-profile.html" class="active">My Profile</a>
+        <a href="wishlist.html">Wishlist</a>
+    </div>
+    <div class="main-content">
+        <header>
+            <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+            <h1>My Book - Student Profile</h1>
+        </header>
+    <p id="user-info"></p>
+    <main>
+        <h2>Edit Your Profile</h2>
+        <form id="profile-form">
+            <label for="name">Name:</label>
+            <input type="text" id="name" required>
+
+            <label for="phone">Phone:</label>
+            <input type="text" id="phone" required>
+
+            <label for="address">Address:</label>
+            <textarea id="address"></textarea>
+
+            <button type="submit">Update Profile</button>
+        </form>
+
+        <h2>Notifications</h2>
+        <div id="notifications-list"></div>
+    </main>
+    </div>
+    <footer>
+        <p>&copy; 2026 My Book Marketplace. All rights reserved.</p>
+    </footer>
+    <script src="js/student-profile.js"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Book - Order Form</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>My Book</h1>
+        <nav>
+            <a href="homepage.html">Home</a>
+            <a href="my-orders.html">My Orders</a>
+        </nav>
+    </header>
+    <main>
+        <h2>Place Your Order</h2>
+        <div id="book-summary"></div>
+        <form id="order-form">
+            <label for="name">Your Name:</label>
+            <input type="text" id="name" maxlength="50" required>
+            
+            <label for="phone">Your Phone:</label>
+            <input type="number" id="phone" maxlength="10" required>
+            
+            <label for="address">Your Address:</label>
+            <textarea id="address" maxlength="200" required></textarea>
+            
+                        <label for="payment">Payment Method:</label>
+            <select id="payment" required>
+                <option value="cod">Cash on Delivery</option>
+                <option value="upi">UPI Payment</option>
+            </select>
+            
+            <button type="submit">Place Order</button>
+        </form>
+    </main>
+
+   <div id="qr-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+    <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 10px; text-align: center; max-width: 300px; max-height: 90vh; overflow-y: auto;">
+        <h3>Scan QR to Pay</h3>
+        <div id="qr-display" style="margin: 10px 0;"></div>
+        <p>Scan the QR code with your UPI app to pay ₹<span id="amount"></span>.</p>
+        <p style="color: red;">Payment verification is manual. Ensure payment is completed before continuing. Fraudulent orders may be rejected by the shop.</p>
+        <label><input type="checkbox" id="payment-confirm"> I have completed the payment</label>
+        <br>
+        <label>Enter UPI Transaction ID: <input type="text" id="transaction-id" required></label>
+        <br><br>
+        <button onclick="closeModal()" id="continue-btn" disabled>Continue</button>
+    </div>
+</div>
+    <script src="js/order-form.js"></script>
+    <script>
+const studentId = localStorage.getItem('student_id');
+if (!studentId) {
+  window.location.href = 'student-login.html';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Book - Book Details</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <h2>My Book</h2>
+        <a href="homepage.html">Home</a>
+        <a href="student-login.html">Student Login</a>
+        <a href="student-register.html">Student Register</a>
+        <a href="shop-login.html">Shop Login</a>
+        <a href="my-orders.html">My Orders</a>
+        <a href="cart.html">Cart</a>
+        <a href="student-profile.html">My Profile</a>
+        <a href="wishlist.html">Wishlist</a>
+    </div>
+    <div class="main-content">
+        <header>
+            <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+            <h1>My Book - Book Details</h1>
+        </header>
+        <main>
+        <h2>Book Details</h2>
+        <div style="display: flex; gap: 2rem; align-items: flex-start;">
+            <div id="book-info" style="flex: 1;"></div>
+            <div class="card" style="flex: 0 0 300px;">
+                <h3 id="book-price"></h3>
+                <button id="visit-shop-profile" class="btn btn-secondary">Visit Shop Profile</button>
+                <button id="order-btn" class="btn btn-primary">Order Now</button>
+                <button id="add-to-cart" class="btn btn-secondary">Add to Cart</button>
+            </div>
+        </div>
+        <div id="reviews-section" class="card">
+            <h3>Reviews</h3>
+            <div id="reviews-list"></div>
+            <h4>Add Review</h4>
+            <form id="review-form">
+                <label for="rating">Rating</label>
+                <select id="rating" required>
+                    <option value="5">5 Stars</option>
+                    <option value="4">4 Stars</option>
+                    <option value="3">3 Stars</option>
+                    <option value="2">2 Stars</option>
+                    <option value="1">1 Star</option>
+                </select>
+                <label for="comment">Comment</label>
+                <textarea id="comment" rows="3"></textarea>
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+            </form>
+        </div>
+        <div id="recommendations-section" class="card">
+            <h3>Recommended Books</h3>
+            <div id="recommendations-list"></div>
+        </div>
+    </main>
+    </div>
+    <script src="js/book-detail.js"></script>
+</body>
+</html>
