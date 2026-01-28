@@ -1,58 +1,22 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-// Log database configuration for debugging
-console.log('=== PostgreSQL Connection Config ===');
-console.log('DB_USER:', process.env.DB_USER || 'postgres');
-console.log('DB_HOST:', process.env.DB_HOST || 'localhost');
-console.log('DB_PORT:', process.env.DB_PORT || 5432);
-console.log('DB_NAME:', process.env.DB_NAME || 'bookmarketplace');
-console.log('DB_PASSWORD:', process.env.DB_PASSWORD ? '***set***' : '❌ NOT SET');
-console.log('====================================');
-
 const pool = new Pool({
   user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || '',
+  password: process.env.DB_PASSWORD,
   host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5432'),
-  database: process.env.DB_NAME || 'bookmarketplace',
-  // Connection timeout
-  connectionTimeoutMillis: 5000,
-  idleTimeoutMillis: 30000,
-  max: 20
+  port: process.env.DB_PORT || 5432,
+  database: process.env.DB_NAME || 'bookmarketplace'
 });
 
 // Handle pool errors
 pool.on('error', (err) => {
-  console.error('❌ Unexpected error on idle client:', err);
-  console.error('Error message:', err.message);
-});
-
-pool.on('connect', () => {
-  console.log('✓ New client connected to PostgreSQL');
-});
-
-// Test connection on startup
-pool.query('SELECT NOW()', (err, result) => {
-  if (err) {
-    console.error('❌ Database connection failed:', err.message);
-    console.error('Check your environment variables:');
-    console.error('  - DB_USER');
-    console.error('  - DB_PASSWORD');
-    console.error('  - DB_HOST');
-    console.error('  - DB_PORT');
-    console.error('  - DB_NAME');
-  } else {
-    console.log('✓ Database connection successful');
-    console.log('✓ PostgreSQL time:', result.rows[0].now);
-  }
+  console.error('Unexpected error on idle client', err);
 });
 
 // Initialize database tables
 async function initDB() {
   try {
-    console.log('Initializing database tables...');
-    
     // Students table
     await pool.query(`
       CREATE TABLE IF NOT EXISTS students (
@@ -130,8 +94,7 @@ async function initDB() {
         student_id INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE,
         book_id INTEGER NOT NULL REFERENCES books(id) ON DELETE CASCADE,
         quantity INTEGER DEFAULT 1,
-        added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(student_id, book_id)
+        added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
 
@@ -141,8 +104,7 @@ async function initDB() {
         id SERIAL PRIMARY KEY,
         student_id INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE,
         book_id INTEGER NOT NULL REFERENCES books(id) ON DELETE CASCADE,
-        added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(student_id, book_id)
+        added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
 
@@ -172,20 +134,9 @@ async function initDB() {
       )
     `);
 
-    // Admins table
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS admins (
-        id SERIAL PRIMARY KEY,
-        username VARCHAR(255) UNIQUE NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-
-    console.log('✓ Database tables initialized successfully');
+    console.log('✓ Database tables initialized');
   } catch (err) {
-    console.error('❌ Error initializing database:', err.message);
-    throw err;
+    console.error('Error initializing database:', err);
   }
 }
 
