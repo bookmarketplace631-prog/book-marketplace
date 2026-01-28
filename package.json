@@ -1,0 +1,12 @@
+{
+  "name": "book-marketplace",
+  "version": "1.0.0",
+  "description": "Root package to start the backend server for Railway",
+  "scripts": {
+    "start": "node backend/server.js",
+    "postinstall": "cd backend && npm install"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
