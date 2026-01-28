@@ -53,10 +53,32 @@ const upload = multer({ dest: 'uploads/' });
 (async () => {
   try {
     await initDB();
+    console.log('✓ initDB completed');
   } catch (err) {
-    console.error('Failed to initialize database:', err);
+    console.error('Failed to initialize database:', err && err.message ? err.message : err);
   }
 })();
+
+// Health check endpoint
+app.get('/health', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT NOW()');
+    res.json({ status: 'ok', database: 'connected', timestamp: result.rows[0].now });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: 'Database connection failed', error: err.message });
+  }
+});
+
+// Debug config endpoint
+app.get('/debug/config', (req, res) => {
+  res.json({
+    DB_HOST: process.env.DB_HOST || null,
+    DB_NAME: process.env.DB_NAME || null,
+    DB_USER: process.env.DB_USER || null,
+    DB_PORT: process.env.DB_PORT || null,
+    NODE_ENV: process.env.NODE_ENV || null
+  });
+});
 
 // Taxonomy data
 const TAXONOMY = {
@@ -179,7 +201,9 @@ app.get('/grades', async (req, res) => {
     const merged = Array.from(new Set([...taxonomyGrades, ...dbGrades]));
     res.json(merged.length > 0 ? merged : DEFAULT_GRADES);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error fetching grades:', err && err.message ? err.message : err);
+    // Fallback: return default grades so frontend keeps working while DB is fixed
+    return res.json(DEFAULT_GRADES);
   }
 });
 
@@ -619,7 +643,9 @@ app.post('/shops/register', async (req, res) => {
 
     res.json({ shop_id: result.rows[0].id });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('❌ /shops/register error:', err.message);
+    console.error('Error code:', err.code, '| Error detail:', err.detail || 'N/A');
+    res.status(500).json({ error: err.message, code: err.code });
   }
 });
 
@@ -644,7 +670,9 @@ app.post('/shops/login', async (req, res) => {
 
     res.json({ shop_id: shop.id, shop_name: shop.shop_name });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('❌ /shops/login error:', err.message);
+    console.error('Error code:', err.code, '| Error detail:', err.detail || 'N/A');
+    res.status(500).json({ error: err.message, code: err.code });
   }
 });
 
@@ -791,7 +819,9 @@ app.post('/students/register', async (req, res) => {
 
     res.json({ student_id: result.rows[0].id });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('❌ /students/register error:', err.message);
+    console.error('Error code:', err.code, '| Error detail:', err.detail || 'N/A');
+    res.status(500).json({ error: err.message, code: err.code });
   }
 });
 
@@ -812,7 +842,9 @@ app.post('/students/login', async (req, res) => {
 
     res.json({ student_id: student.id, student_name: student.name, student_phone: student.phone });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('❌ /students/login error:', err.message);
+    console.error('Error code:', err.code, '| Error detail:', err.detail || 'N/A');
+    res.status(500).json({ error: err.message, code: err.code });
   }
 });
 
