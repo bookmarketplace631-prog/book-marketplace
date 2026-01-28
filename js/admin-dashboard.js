@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:3000';
+// Using API_BASE from config.js
 
 if (!localStorage.getItem('admin_logged_in')) {
     window.location.href = 'admin-login.html';

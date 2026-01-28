@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:3000';
+// Using API_BASE from config.js
 
 let studentId = localStorage.getItem('student_id');
 let studentName = localStorage.getItem('student_name');

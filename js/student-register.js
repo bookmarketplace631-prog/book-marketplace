@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:3000';
+// Using API_BASE from config.js
 
 document.getElementById('register-form').addEventListener('submit', async (e) => {
   e.preventDefault();

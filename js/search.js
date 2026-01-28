@@ -1,8 +1,7 @@
 console.log('search.js loaded');
 console.log('fetchData defined:', typeof fetchData);
 
-// filepath: c:\Users\Dell\Desktop\vishv\js/search.js
-const API_BASE = 'http://localhost:3000';  // Moved here
+// Using API_BASE from config.js
 
 // Moved from homepage.js
 async function fetchData(endpoint) {
