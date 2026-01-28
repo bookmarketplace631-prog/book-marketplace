@@ -10,6 +10,23 @@ const helmet = require('helmet');
 const winston = require('winston');
 require('dotenv').config();
 
+// Logger
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.File({ filename: 'error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'combined.log' })
+  ]
+});
+
+if (process.env.NODE_ENV !== 'production') {
+  logger.add(new winston.transports.Console({ format: winston.format.simple() }));
+}
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -162,7 +179,17 @@ function initDB() {
       FOREIGN KEY (student_id) REFERENCES students(id),
       FOREIGN KEY (book_id) REFERENCES books(id),
       UNIQUE(student_id, book_id)
-    )
+    cd C:\Users\Dell\Desktop\vishv
+    @'
+    #!/usr/bin/env bash
+    set -e
+    cd backend
+    npm install
+    node server.js
+    '@ > start.sh
+    git add start.sh package.json
+    git commit -m "ci: add start.sh and root package.json for Railway deploy"
+    git push    )
   `);
 
   console.log('Database and tables created successfully.');
@@ -1238,7 +1265,7 @@ app.get('/reviews/:target_type/:target_id', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  logger.info(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
 
 // Notifications routes
