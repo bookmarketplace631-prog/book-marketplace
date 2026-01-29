@@ -412,9 +412,10 @@ app.post('/orders', async (req, res) => {
     }
 
     console.log('✅ POST /orders - Inserting order:', orderId);
+    // Use the actual schema: book_ids (TEXT), quantities, prices, total_price
     const orderResult = await pool.query(
-      'INSERT INTO orders (order_id, student_name, student_phone, student_address, book_id, shop_id, payment_method, qr_url, student_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id',
-      [orderId, student_name, student_phone, student_address, book_id, data.shop_id, payment_method, qr_url, student_id]
+      'INSERT INTO orders (order_id, student_id, student_name, student_phone, student_address, book_ids, quantities, prices, total_price, shop_id, payment_method, order_status, payment_status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id',
+      [orderId, student_id, student_name, student_phone, student_address, book_id.toString(), '1', data.price.toString(), data.price, data.shop_id, payment_method || 'cod', 'pending', payment_method === 'upi' ? 'pending' : 'pending']
     );
 
     console.log('✅ POST /orders - Order inserted with ID:', orderResult.rows[0].id);
@@ -529,9 +530,7 @@ app.get('/orders/shop/:shopId', async (req, res) => {
     const { shopId } = req.params;
     const { status } = req.query;
 
-    let sql = `SELECT o.*, b.book_name FROM orders o 
-               LEFT JOIN books b ON o.book_id = b.id 
-               WHERE o.shop_id = $1`;
+    let sql = `SELECT o.* FROM orders o WHERE o.shop_id = $1`;
     const params = [shopId];
 
     if (status) {
@@ -545,7 +544,20 @@ app.get('/orders/shop/:shopId', async (req, res) => {
     console.log('✅ GET /orders/shop/:shopId - Fetching orders for shop:', shopId, 'Status filter:', status || 'not delivered');
     const result = await pool.query(sql, params);
     console.log('✅ GET /orders/shop/:shopId - Found', result.rows.length, 'orders');
-    res.json(result.rows);
+    
+    // Format the response to match what the frontend expects
+    const formattedOrders = result.rows.map(order => {
+      // Parse the first book_id from book_ids string (format: "id1,id2,id3")
+      const bookIds = order.book_ids.split(',').map(id => parseInt(id.trim()));
+      const firstBookId = bookIds[0];
+      return {
+        ...order,
+        book_id: firstBookId,
+        book_name: `Book (ID: ${firstBookId})` // Will be replaced with actual book name
+      };
+    });
+    
+    res.json(formattedOrders);
   } catch (err) {
     console.error('❌ GET /orders/shop/:shopId error:', err.message);
     res.status(500).json({ error: err.message });
