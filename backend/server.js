@@ -1276,11 +1276,11 @@ app.delete('/admin/clear-database', async (req, res) => {
 });
 
 // TEMPORARY: Create admin user endpoint (remove after use)
-app.post('/admin/create-user', async (req, res) => {
+app.get('/admin/create-user', async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash('admin123', 10);
     await pool.query(
-      'INSERT INTO admins (username, password) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+      'INSERT INTO admins (username, password) VALUES ($1, $2) ON CONFLICT (username) DO NOTHING',
       ['admin', hashedPassword]
     );
     res.json({ message: '✅ Admin user created! Username: admin, Password: admin123' });
