@@ -5,18 +5,26 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
   const name = document.getElementById('name').value;
   const phone = document.getElementById('phone').value;
   const password = document.getElementById('password').value;
-  const response = await fetch(`${API_BASE}/students/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, phone, password })
-  });
-  if (response.ok) {
-    const data = await response.json();
-    console.log('✅ Registration successful, student_id:', data.student_id);
-    alert('Registered successfully');
-    window.location.href = 'student-login.html';
-  } else {
-    const errorData = await response.json();
-    console.error('❌ Registration failed:', errorData);
-    alert('Registration failed: ' + (errorData.error || 'Unknown error'));  }
+  
+  try {
+    const response = await fetch(`${API_BASE}/students/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, phone, password })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('✅ Registration successful, student_id:', data.student_id);
+      alert('Registered successfully');
+      window.location.href = 'student-login.html';
+    } else {
+      const errorData = await response.json();
+      console.error('❌ Registration failed:', errorData);
+      alert('Registration failed: ' + (errorData.error || 'Unknown error'));
+    }
+  } catch (err) {
+    console.error('❌ Registration request failed:', err);
+    alert('Registration failed: Network or server error');
+  }
 });
