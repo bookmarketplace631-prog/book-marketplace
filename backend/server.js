@@ -842,6 +842,13 @@ app.get('/shops/:id/rating', async (req, res) => {
 app.post('/students/register', async (req, res) => {
   try {
     const { name, phone, password } = req.body;
+    console.log('📝 /students/register attempt - name:', name, 'phone:', phone);
+    
+    if (!name || !phone || !password) {
+      console.warn('⚠️ /students/register - missing fields');
+      return res.status(400).json({ error: 'Name, phone, and password required' });
+    }
+    
     const hashedPassword = bcrypt.hashSync(password, 10);
 
     const result = await pool.query(
@@ -849,6 +856,7 @@ app.post('/students/register', async (req, res) => {
       [name, phone, hashedPassword]
     );
 
+    console.log('✅ /students/register - SUCCESS, created student ID:', result.rows[0].id);
     res.json({ student_id: result.rows[0].id });
   } catch (err) {
     console.error('❌ /students/register error:', err.message);
