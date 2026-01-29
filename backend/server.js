@@ -420,11 +420,36 @@ app.post('/orders', async (req, res) => {
       console.log('✅ POST /orders - Student found:', student_name);
     }
 
+    // Ensure we have a student_id for DB (DB expects student_id not null)
+    let finalStudentId = student_id;
+    if (!finalStudentId) {
+      if (student_phone) {
+        // Try to find existing student by phone
+        const existing = await pool.query('SELECT id FROM students WHERE phone = $1', [student_phone]);
+        if (existing.rows.length > 0) {
+          finalStudentId = existing.rows[0].id;
+          console.log('✅ POST /orders - Found existing student id by phone:', finalStudentId);
+        } else {
+          // Create new student record (minimal info)
+          const pass = bcrypt.hashSync(Math.random().toString(36).slice(2, 10), 10);
+          const insertRes = await pool.query('INSERT INTO students (name, phone, password) VALUES ($1, $2, $3) RETURNING id', [student_name || 'Guest', student_phone, pass]);
+          finalStudentId = insertRes.rows[0].id;
+          console.log('✅ POST /orders - Created new student with id:', finalStudentId);
+        }
+      } else {
+        // As a fallback, create an anonymous student record
+        const pass = bcrypt.hashSync(Math.random().toString(36).slice(2, 10), 10);
+        const insertRes = await pool.query('INSERT INTO students (name, phone, password) VALUES ($1, $2, $3) RETURNING id', [student_name || 'Guest', '0000000000', pass]);
+        finalStudentId = insertRes.rows[0].id;
+        console.log('✅ POST /orders - Created anonymous student id:', finalStudentId);
+      }
+    }
+
     console.log('✅ POST /orders - Inserting order:', orderId);
     // Use the actual schema: book_ids (TEXT), quantities, prices, total_price
     const orderResult = await pool.query(
       'INSERT INTO orders (order_id, student_id, student_name, student_phone, student_address, book_ids, quantities, prices, total_price, shop_id, payment_method, order_status, payment_status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id',
-      [orderId, student_id, student_name, student_phone, student_address, book_id.toString(), '1', data.price.toString(), data.price, data.shop_id, payment_method || 'cod', 'pending', payment_method === 'upi' ? 'pending' : 'pending']
+      [orderId, finalStudentId, student_name, student_phone, student_address, book_id.toString(), '1', data.price.toString(), data.price, data.shop_id, payment_method || 'cod', 'pending', payment_method === 'upi' ? 'pending' : 'pending']
     );
 
     console.log('✅ POST /orders - Order inserted with ID:', orderResult.rows[0].id);
