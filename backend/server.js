@@ -1274,6 +1274,21 @@ app.delete('/admin/clear-database', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// TEMPORARY: Create admin user endpoint (remove after use)
+app.post('/admin/create-user', async (req, res) => {
+  try {
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+    await pool.query(
+      'INSERT INTO admins (username, password) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+      ['admin', hashedPassword]
+    );
+    res.json({ message: '✅ Admin user created! Username: admin, Password: admin123' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ========== START SERVER ==========
 
 app.listen(PORT, () => {
