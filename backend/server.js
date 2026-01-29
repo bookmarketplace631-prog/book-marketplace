@@ -282,7 +282,7 @@ app.get('/books/:id', async (req, res) => {
 
     if (student_id) {
       const orderResult = await pool.query(
-        'SELECT id FROM orders WHERE student_id = $1 AND shop_id = $2 AND status != \'cancelled\'',
+        'SELECT id FROM orders WHERE student_id = $1 AND shop_id = $2 AND order_status != \'cancelled\'',
         [student_id, row.shop_id]
       );
       if (orderResult.rows.length === 0) phone = null;

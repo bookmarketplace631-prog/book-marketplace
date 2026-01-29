@@ -19,6 +19,7 @@ document.addEventListener('click', (e) => {
 });
 
 function getStars(rating) {
+  if (!rating || typeof rating !== 'number') rating = 0;
   const fullStars = Math.floor(rating);
   const halfStar = rating % 1 >= 0.5 ? 1 : 0;
   const emptyStars = 5 - fullStars - halfStar;
