@@ -1402,6 +1402,27 @@ app.get('/admin/create-user', async (req, res) => {
 
 // ========== START SERVER ==========
 
+// Process-level handlers to capture errors and graceful shutdowns
+process.on('uncaughtException', (err) => {
+  console.error('❌ Uncaught Exception:', err && err.stack ? err.stack : err);
+  logger.error('Uncaught Exception', { message: err && err.message, stack: err && err.stack });
+  // Allow logs to flush
+  setTimeout(() => process.exit(1), 1000);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+  logger.error('Unhandled Rejection', { reason: reason && (reason.message || reason), promise: String(promise) });
+  setTimeout(() => process.exit(1), 1000);
+});
+
+process.on('SIGTERM', () => {
+  console.log('⚠️ SIGTERM received, shutting down gracefully...');
+  logger.info('SIGTERM received, shutting down');
+  // close server and exit
+  process.exit(0);
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
