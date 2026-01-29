@@ -99,4 +99,6 @@ if (sidebarToggle) {
 
 // Close sidebar when clicking outside
 document.addEventListener('click', (e) => {
-    if (sidebar && sidebarToggle && !sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+    if (sidebar && sidebarToggle && !sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {        sidebar.classList.remove('open');
+    }
+});
