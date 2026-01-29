@@ -132,3 +132,6 @@ async function closeModal() {
 if (!localStorage.getItem('student_id')) {
     window.location.href = 'student-login.html';
 }
+
+// Initialize page
+init();
