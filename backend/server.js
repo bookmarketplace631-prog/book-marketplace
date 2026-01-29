@@ -366,25 +366,33 @@ app.delete('/books/:id', async (req, res) => {
 // Create order
 app.post('/orders', async (req, res) => {
   try {
+    console.log('✅ POST /orders - Request body:', JSON.stringify(req.body));
     const { book_id, student_name: reqStudentName, student_phone: reqStudentPhone, student_address, payment_method, student_id } = req.body;
 
     if (!book_id || !student_address || ((!(reqStudentName && reqStudentPhone)) && !student_id)) {
+      console.log('❌ POST /orders - Missing required fields');
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
     let student_name = reqStudentName;
     let student_phone = reqStudentPhone;
 
+    console.log('✅ POST /orders - Fetching book:', book_id);
     const bookResult = await pool.query(
       'SELECT books.shop_id, books.price, shops.upi_id, shops.shop_name FROM books JOIN shops ON books.shop_id = shops.id WHERE books.id = $1',
       [book_id]
     );
 
-    if (bookResult.rows.length === 0) return res.status(500).json({ error: 'Book or shop not found' });
+    if (bookResult.rows.length === 0) {
+      console.log('❌ POST /orders - Book or shop not found');
+      return res.status(500).json({ error: 'Book or shop not found' });
+    }
 
     const data = bookResult.rows[0];
     const orderId = 'ORD-' + Date.now();
     let qr_url = null;
+
+    console.log('✅ POST /orders - Book found. Shop ID:', data.shop_id, 'Price:', data.price);
 
     if (payment_method === 'upi' && data.upi_id) {
       const upiUrl = `upi://pay?pa=${data.upi_id}&pn=${encodeURIComponent(data.shop_name)}&am=${data.price}&cu=INR&tn=${orderId}`;
@@ -392,16 +400,24 @@ app.post('/orders', async (req, res) => {
     }
 
     if ((!student_name || !student_phone) && student_id) {
+      console.log('✅ POST /orders - Fetching student details for student_id:', student_id);
       const studentResult = await pool.query('SELECT name, phone FROM students WHERE id = $1', [student_id]);
-      if (studentResult.rows.length === 0) return res.status(400).json({ error: 'Student not found' });
+      if (studentResult.rows.length === 0) {
+        console.log('❌ POST /orders - Student not found');
+        return res.status(400).json({ error: 'Student not found' });
+      }
       student_name = studentResult.rows[0].name;
       student_phone = studentResult.rows[0].phone;
+      console.log('✅ POST /orders - Student found:', student_name);
     }
 
+    console.log('✅ POST /orders - Inserting order:', orderId);
     const orderResult = await pool.query(
       'INSERT INTO orders (order_id, student_name, student_phone, student_address, book_id, shop_id, payment_method, qr_url, student_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id',
       [orderId, student_name, student_phone, student_address, book_id, data.shop_id, payment_method, qr_url, student_id]
     );
+
+    console.log('✅ POST /orders - Order inserted with ID:', orderResult.rows[0].id);
 
     // Add notification to shop
     await pool.query(
@@ -412,9 +428,10 @@ app.post('/orders', async (req, res) => {
     // Decrease stock
     await pool.query('UPDATE books SET stock = stock - 1 WHERE id = $1', [book_id]);
 
+    console.log('✅ POST /orders - SUCCESS. Order ID:', orderId);
     res.json({ order_id: orderId, qr_url, id: orderResult.rows[0].id });
   } catch (err) {
-    console.error('Error creating order:', err);
+    console.error('❌ POST /orders - ERROR:', err.message, err.stack);
     res.status(500).json({ error: err.message });
   }
 });

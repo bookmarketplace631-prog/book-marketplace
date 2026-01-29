@@ -77,6 +77,11 @@ function init() {
             document.getElementById('qr-display').innerHTML = `<img src="${result.qr_url}" style="width: 200px; height: 200px;">`;
             document.getElementById('amount').textContent = bookData.price;  // Now safe
             document.getElementById('qr-modal').style.display = 'flex';
+            
+            // Add event listener to continue button
+            const continueBtn = document.getElementById('continue-btn');
+            continueBtn.addEventListener('click', closeModal);
+            
             // Enable continue only after confirmation and transaction ID
             document.getElementById('payment-confirm').addEventListener('change', checkContinue);
             document.getElementById('transaction-id').addEventListener('input', checkContinue);
@@ -123,4 +128,7 @@ async function closeModal() {
     window.location.href = 'my-orders.html';
 }
 
-init();
+// Redirect if not logged in
+if (!localStorage.getItem('student_id')) {
+    window.location.href = 'student-login.html';
+}
