@@ -219,6 +219,20 @@ app.get('/grades', async (req, res) => {
   }
 });
 
+// Get books by shop
+app.get('/books/shop/:shopId', async (req, res) => {
+  try {
+    const { shopId } = req.params;
+    const result = await pool.query(
+      'SELECT * FROM books WHERE shop_id = $1 ORDER BY created_at DESC',
+      [shopId]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Get subjects by grade
 app.get('/subjects', async (req, res) => {
   try {

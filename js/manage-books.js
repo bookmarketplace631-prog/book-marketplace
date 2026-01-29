@@ -94,16 +94,35 @@ async function loadBooks() {
     const books = await fetchData(`/books/shop/${shopId}`);
     const list = document.getElementById('books-list');
     list.innerHTML = '';
+    
+    if (!books || !Array.isArray(books)) {
+        list.innerHTML = '<p>No books found</p>';
+        return;
+    }
+
+    if (books.length === 0) {
+        list.innerHTML = '<p>No books yet. Add one to get started!</p>';
+        return;
+    }
+
     books.forEach(book => {
         const div = document.createElement('div');
         div.innerHTML = `
             <h3>${book.book_name}</h3>
             ${book.cover_url ? `<img src="${book.cover_url}" style="width: 100px; height: 150px;">` : ''}
-            <p>Edition: ${book.edition || 'N/A'} | Subject: ${book.subject} | Price: ₹${book.price} | Condition: ${book.condition} | Stock: ${book.stock}</p>
-            <button onclick="editBook(${book.id})">Edit</button>
-            <button onclick="deleteBook(${book.id})">Delete</button>
+            <p>Edition: ${book.edition || 'N/A'} | Subject: ${book.subject} | Grade: ${book.grade} | Price: ₹${book.price} | Condition: ${book.condition} | Stock: ${book.stock}</p>
+            <button class="edit-btn" data-id="${book.id}">Edit</button>
+            <button class="delete-btn" data-id="${book.id}">Delete</button>
         `;
         list.appendChild(div);
+    });
+
+    // Add event listeners
+    list.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => editBook(e.target.dataset.id));
+    });
+    list.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => deleteBook(e.target.dataset.id));
     });
 }
 
