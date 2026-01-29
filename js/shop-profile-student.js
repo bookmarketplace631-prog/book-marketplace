@@ -13,7 +13,7 @@ const loggedInShopId = localStorage.getItem('shop_id');
 
 if (!shopId) {
     alert('No shop selected.');
-    window.location.href = 'homepage.html';
+    window.location.href = 'index.html';
 }
 
 async function fetchData(endpoint, options = {}) {

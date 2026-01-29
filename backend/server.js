@@ -1257,6 +1257,23 @@ app.put('/notifications/:id/read', async (req, res) => {
   }
 });
 
+// TEMPORARY: Delete all data endpoint (remove after use)
+app.delete('/admin/clear-database', async (req, res) => {
+  try {
+    await pool.query('TRUNCATE TABLE cart CASCADE');
+    await pool.query('TRUNCATE TABLE wishlist CASCADE');
+    await pool.query('TRUNCATE TABLE reviews CASCADE');
+    await pool.query('TRUNCATE TABLE notifications CASCADE');
+    await pool.query('TRUNCATE TABLE orders CASCADE');
+    await pool.query('TRUNCATE TABLE books CASCADE');
+    await pool.query('TRUNCATE TABLE students CASCADE');
+    await pool.query('TRUNCATE TABLE shops CASCADE');
+    await pool.query('TRUNCATE TABLE admins CASCADE');
+    res.json({ message: '✅ All data cleared successfully!' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 // ========== START SERVER ==========
 
 app.listen(PORT, () => {

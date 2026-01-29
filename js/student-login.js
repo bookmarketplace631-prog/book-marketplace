@@ -15,7 +15,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     localStorage.setItem('student_id', data.student_id);
     localStorage.setItem('student_name', data.student_name || data.name);
     if (data.student_phone) localStorage.setItem('student_phone', data.student_phone);
-    window.location.href = 'homepage.html';
+    window.location.href = 'index.html';
   } else {
     alert('Login failed');
   }
