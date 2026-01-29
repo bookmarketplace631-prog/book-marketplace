@@ -5,7 +5,13 @@ if (!shopId) window.location.href = 'shop-login.html';
 
 async function fetchData(endpoint, options = {}) {
   try {
-    const response = await fetch(`${API_BASE}${endpoint}`, options);
+    // Add cache-busting timestamp to ensure fresh data
+    const separator = endpoint.includes('?') ? '&' : '?';
+    const url = `${API_BASE}${endpoint}${separator}t=${Date.now()}`;
+    const response = await fetch(url, {
+      ...options,
+      cache: 'no-store' // Don't cache this request
+    });
     return await response.json();
   } catch (error) {
     console.error('Fetch error:', error);
@@ -86,6 +92,12 @@ async function markPaid(id) {
 }
 
 loadOrders();
+
+// Auto-refresh orders every 5 seconds
+setInterval(() => {
+    console.log('🔄 Auto-refreshing orders...');
+    loadOrders();
+}, 5000);
 
 // Sidebar toggle
 const sidebarToggle = document.getElementById('sidebar-toggle');
