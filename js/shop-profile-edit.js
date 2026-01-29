@@ -57,9 +57,14 @@ async function loadNotifications() {
         <div class="notification ${n.is_read ? 'read' : 'unread'}">
             <p>${n.message}</p>
             <small>${new Date(n.created_at).toLocaleString()}</small>
-            ${!n.is_read ? `<button onclick="markRead(${n.id})">Mark as Read</button>` : ''}
+            ${!n.is_read ? `<button class="mark-read-btn" data-id="${n.id}">Mark as Read</button>` : ''}
         </div>
     `).join('');
+
+    // Add event listeners
+    list.querySelectorAll('.mark-read-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => markRead(e.target.dataset.id));
+    });
 }
 
 async function markRead(id) {

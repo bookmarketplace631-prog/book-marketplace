@@ -19,10 +19,18 @@ async function loadBooks() {
       <h3>${book.book_name}</h3>
       ${book.cover_url ? `<img src="${book.cover_url}" style="width: 100px; height: 150px;">` : ''}
       <p>Edition: ${book.edition || 'N/A'} | Subject: ${book.subject} | Grade: ${book.grade} | Price: ₹${book.price} | Condition: ${book.condition} | Stock: ${book.stock} | Category: ${book.category}</p>
-      <button onclick="editBook(${book.id})">Edit</button>
-      <button onclick="deleteBook(${book.id})">Delete</button>
+      <button class="edit-btn" data-id="${book.id}">Edit</button>
+      <button class="delete-btn" data-id="${book.id}">Delete</button>
     `;
     list.appendChild(div);
+  });
+
+  // Add event listeners
+  list.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => editBook(e.target.dataset.id));
+  });
+  list.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => deleteBook(e.target.dataset.id));
   });
 }
 
