@@ -33,7 +33,18 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "https://cdn.jsdelivr.net"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'"],
+      fontSrc: ["'self'", "https:"]
+    }
+  }
+}));
 app.use(cors({ origin: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..')));
@@ -759,13 +770,13 @@ app.get('/shops/:id/analytics', async (req, res) => {
 
     const ordersResult = await pool.query('SELECT COUNT(*) as count FROM orders WHERE shop_id = $1', [id]);
     const revenueResult = await pool.query(
-      'SELECT COALESCE(SUM(books.price), 0) as total FROM orders JOIN books ON orders.book_id = books.id WHERE orders.shop_id = $1 AND orders.status = \'delivered\' AND orders.payment_status = \'paid\'',
+      'SELECT COALESCE(SUM(total_price), 0) as total FROM orders WHERE shop_id = $1 AND order_status = \'delivered\' AND payment_status = \'paid\'',
       [id]
     );
 
     const today = new Date().toISOString().split('T')[0];
     const todayResult = await pool.query(
-      'SELECT COALESCE(SUM(books.price), 0) as total FROM orders JOIN books ON orders.book_id = books.id WHERE orders.shop_id = $1 AND orders.status = \'delivered\' AND orders.payment_status = \'paid\' AND DATE(orders.created_at) = $2::date',
+      'SELECT COALESCE(SUM(total_price), 0) as total FROM orders WHERE shop_id = $1 AND order_status = \'delivered\' AND payment_status = \'paid\' AND DATE(created_at) = $2::date',
       [id, today]
     );
 
