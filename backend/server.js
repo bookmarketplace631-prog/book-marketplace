@@ -529,20 +529,25 @@ app.get('/orders/shop/:shopId', async (req, res) => {
     const { shopId } = req.params;
     const { status } = req.query;
 
-    let sql = 'SELECT * FROM orders WHERE shop_id = $1';
+    let sql = `SELECT o.*, b.book_name FROM orders o 
+               LEFT JOIN books b ON o.book_id = b.id 
+               WHERE o.shop_id = $1`;
     const params = [shopId];
 
     if (status) {
-      sql += ' AND order_status = $2';
+      sql += ' AND o.order_status = $2';
       params.push(status);
     } else {
-      sql += ' AND order_status != \'delivered\'';
+      sql += ' AND o.order_status != \'delivered\'';
     }
 
-    sql += ' ORDER BY created_at DESC';
+    sql += ' ORDER BY o.created_at DESC';
+    console.log('✅ GET /orders/shop/:shopId - Fetching orders for shop:', shopId, 'Status filter:', status || 'not delivered');
     const result = await pool.query(sql, params);
+    console.log('✅ GET /orders/shop/:shopId - Found', result.rows.length, 'orders');
     res.json(result.rows);
   } catch (err) {
+    console.error('❌ GET /orders/shop/:shopId error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
