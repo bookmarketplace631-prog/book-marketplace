@@ -53,11 +53,19 @@ async function loadShops() {
             <td>${shop.avg_rating.toFixed(1)} (${shop.review_count})</td>
             <td>${shop.verified ? 'Yes' : 'No'}</td>
             <td>
-                ${!shop.verified ? `<button onclick="approveShop(${shop.id})">Approve</button>` : ''}
-                <button onclick="rejectShop(${shop.id})">Reject</button>
+                ${!shop.verified ? `<button class="approve-btn" data-id="${shop.id}">Approve</button>` : ''}
+                <button class="reject-btn" data-id="${shop.id}">Reject</button>
             </td>
         </tr>
     `).join('');
+
+    // Add event listeners
+    tbody.querySelectorAll('.approve-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => approveShop(e.target.dataset.id));
+    });
+    tbody.querySelectorAll('.reject-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => rejectShop(e.target.dataset.id));
+    });
 }
 
 async function approveShop(id) {
@@ -90,10 +98,18 @@ async function loadShopRequests() {
         <div>
             <h3>${shop.shop_name}</h3>
             <p>Owner: ${shop.owner_name}, Phone: ${shop.phone}, City: ${shop.city}</p>
-            <button onclick="approveShop(${shop.id})">Approve</button>
-            <button onclick="rejectShop(${shop.id})">Reject</button>
+            <button class="approve-btn" data-id="${shop.id}">Approve</button>
+            <button class="reject-btn" data-id="${shop.id}">Reject</button>
         </div>
     `).join('');
+
+    // Add event listeners
+    list.querySelectorAll('.approve-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => approveShop(e.target.dataset.id));
+    });
+    list.querySelectorAll('.reject-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => rejectShop(e.target.dataset.id));
+    });
 }
 
 async function loadStudents() {
