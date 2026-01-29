@@ -1089,13 +1089,20 @@ app.get('/admin/shops', async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT shops.id, shop_name, owner_name, phone, city, verified, notification, shops.created_at,
-             COALESCE(AVG(reviews.rating), 0) as avg_rating, COUNT(reviews.id) as review_count
+             COALESCE(AVG(reviews.rating), 0)::numeric as avg_rating, COUNT(reviews.id) as review_count
       FROM shops
       LEFT JOIN reviews ON reviews.target_type = 'shop' AND reviews.target_id = shops.id
       GROUP BY shops.id
+      ORDER BY shops.id
     `);
 
-    res.json(result.rows);
+    // Ensure avg_rating is always a number
+    const shops = result.rows.map(shop => ({
+      ...shop,
+      avg_rating: parseFloat(shop.avg_rating) || 0
+    }));
+
+    res.json(shops);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -1109,7 +1116,7 @@ app.get('/admin/analytics', async (req, res) => {
     const booksResult = await pool.query('SELECT COUNT(*) as count FROM books');
     const ordersResult = await pool.query('SELECT COUNT(*) as count FROM orders');
     const revenueResult = await pool.query(
-      'SELECT COALESCE(SUM(books.price), 0) as total FROM orders JOIN books ON orders.book_id = books.id WHERE orders.status = \'delivered\' AND orders.payment_status = \'paid\''
+      'SELECT COALESCE(SUM(total_price), 0) as total FROM orders WHERE order_status = \'delivered\' AND payment_status = \'paid\''
     );
     const ratingResult = await pool.query('SELECT COALESCE(AVG(rating), 0) as avg_rating FROM reviews WHERE target_type = \'shop\'');
 
@@ -1119,7 +1126,9 @@ app.get('/admin/analytics', async (req, res) => {
       totalBooks: booksResult.rows[0].count,
       totalOrders: ordersResult.rows[0].count,
       totalRevenue: parseFloat(revenueResult.rows[0].total),
-      avgRating: parseFloat(ratingResult.rows[0].avg_rating)
+      avgRating: parseFloat(ratingResult.rows[0].avg_rating),
+      topBooks: [],
+      monthlyRevenue: []
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
