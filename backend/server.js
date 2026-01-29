@@ -50,6 +50,7 @@ app.use(cors({ origin: true }));
 // Simple request logger to help debug missing routes / timeouts
 app.use((req, res, next) => {
   console.log(`➡️ ${req.method} ${req.originalUrl}`);
+  logger.info('Incoming request', { method: req.method, url: req.originalUrl });
   next();
 });
 app.use(express.json());
@@ -376,6 +377,7 @@ app.delete('/books/:id', async (req, res) => {
 app.post('/orders', async (req, res) => {
   try {
     console.log('✅ POST /orders - Request body:', JSON.stringify(req.body));
+    logger.info('POST /orders request', { body: req.body });
     const { book_id, student_name: reqStudentName, student_phone: reqStudentPhone, student_address, payment_method, student_id } = req.body;
 
     if (!book_id || !student_address || ((!(reqStudentName && reqStudentPhone)) && !student_id)) {
@@ -402,6 +404,7 @@ app.post('/orders', async (req, res) => {
     let qr_url = null;
 
     console.log('✅ POST /orders - Book found. Shop ID:', data.shop_id, 'Price:', data.price);
+    logger.info('POST /orders - Book found', { shop_id: data.shop_id, price: data.price, book_id });
 
     if (payment_method === 'upi' && data.upi_id) {
       const upiUrl = `upi://pay?pa=${data.upi_id}&pn=${encodeURIComponent(data.shop_name)}&am=${data.price}&cu=INR&tn=${orderId}`;
@@ -429,12 +432,14 @@ app.post('/orders', async (req, res) => {
         if (existing.rows.length > 0) {
           finalStudentId = existing.rows[0].id;
           console.log('✅ POST /orders - Found existing student id by phone:', finalStudentId);
+          logger.info('POST /orders - found student by phone', { student_id: finalStudentId });
         } else {
           // Create new student record (minimal info)
           const pass = bcrypt.hashSync(Math.random().toString(36).slice(2, 10), 10);
           const insertRes = await pool.query('INSERT INTO students (name, phone, password) VALUES ($1, $2, $3) RETURNING id', [student_name || 'Guest', student_phone, pass]);
           finalStudentId = insertRes.rows[0].id;
           console.log('✅ POST /orders - Created new student with id:', finalStudentId);
+          logger.info('POST /orders - created student', { student_id: finalStudentId });
         }
       } else {
         // As a fallback, create an anonymous student record
@@ -442,10 +447,12 @@ app.post('/orders', async (req, res) => {
         const insertRes = await pool.query('INSERT INTO students (name, phone, password) VALUES ($1, $2, $3) RETURNING id', [student_name || 'Guest', '0000000000', pass]);
         finalStudentId = insertRes.rows[0].id;
         console.log('✅ POST /orders - Created anonymous student id:', finalStudentId);
+        logger.info('POST /orders - created anonymous student', { student_id: finalStudentId });
       }
     }
 
     console.log('✅ POST /orders - Inserting order:', orderId);
+    logger.info('POST /orders - inserting order', { order_id: orderId, student_id: finalStudentId, shop_id: data.shop_id });
     // Use the actual schema: book_ids (TEXT), quantities, prices, total_price
     const orderResult = await pool.query(
       'INSERT INTO orders (order_id, student_id, student_name, student_phone, student_address, book_ids, quantities, prices, total_price, shop_id, payment_method, order_status, payment_status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id',
@@ -453,6 +460,7 @@ app.post('/orders', async (req, res) => {
     );
 
     console.log('✅ POST /orders - Order inserted with ID:', orderResult.rows[0].id);
+    logger.info('POST /orders - order inserted', { order_db_id: orderResult.rows[0].id });
 
     // Add notification to shop
     await pool.query(
@@ -464,9 +472,11 @@ app.post('/orders', async (req, res) => {
     await pool.query('UPDATE books SET stock = stock - 1 WHERE id = $1', [book_id]);
 
     console.log('✅ POST /orders - SUCCESS. Order ID:', orderId);
+    logger.info('POST /orders - success', { order_id: orderId });
     res.json({ order_id: orderId, qr_url, id: orderResult.rows[0].id });
   } catch (err) {
     console.error('❌ POST /orders - ERROR:', err.message, err.stack);
+    logger.error('POST /orders - error', { message: err.message, stack: err.stack });
     res.status(500).json({ error: err.message });
   }
 });
