@@ -866,6 +866,13 @@ app.post('/students/register', async (req, res) => {
       return res.status(400).json({ error: 'Name, phone, and password required' });
     }
     
+    // Check if phone already exists
+    const checkResult = await pool.query('SELECT id FROM students WHERE phone = $1', [phone]);
+    if (checkResult.rows.length > 0) {
+      console.warn('⚠️ /students/register - phone already registered:', phone);
+      return res.status(400).json({ error: 'This phone number is already registered' });
+    }
+    
     const hashedPassword = bcrypt.hashSync(password, 10);
 
     const result = await pool.query(
@@ -873,11 +880,16 @@ app.post('/students/register', async (req, res) => {
       [name, phone, hashedPassword]
     );
 
-    console.log('✅ /students/register - SUCCESS, created student ID:', result.rows[0].id);
+    console.log('✅ /students/register - SUCCESS, created student ID:', result.rows[0].id, 'phone:', phone);
     res.json({ student_id: result.rows[0].id });
   } catch (err) {
     console.error('❌ /students/register error:', err.message);
     console.error('Error code:', err.code, '| Error detail:', err.detail || 'N/A');
+    // Handle specific constraint errors
+    if (err.code === '23505') {
+      // Unique constraint violation
+      return res.status(400).json({ error: 'This phone number is already registered' });
+    }
     res.status(500).json({ error: err.message, code: err.code });
   }
 });
