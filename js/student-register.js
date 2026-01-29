@@ -18,4 +18,5 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
   } else {
     const errorData = await response.json();
     console.error('❌ Registration failed:', errorData);
-    alert('Registration failed: ' + (errorData.error || 'Unknown error'));
+    alert('Registration failed: ' + (errorData.error || 'Unknown error'));  }
+});
