@@ -66,13 +66,22 @@ app.use('/api/', limiter);
 
 const upload = multer({ dest: 'uploads/' });
 
-// Initialize database on startup
+// Initialize database on startup (non-blocking with timeout)
+let dbReady = false;
 (async () => {
   try {
-    await initDB();
+    console.log('Starting database initialization with 30s timeout...');
+    const initPromise = initDB();
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('DB init timeout')), 30000)
+    );
+    await Promise.race([initPromise, timeoutPromise]);
+    dbReady = true;
     console.log('✓ initDB completed');
   } catch (err) {
-    console.error('Failed to initialize database:', err && err.message ? err.message : err);
+    console.error('⚠️ Database initialization issue:', err && err.message ? err.message : err);
+    console.error('Server will continue but database may not be ready');
+    dbReady = false;
   }
 })();
 

@@ -18,8 +18,8 @@ const pool = new Pool({
   database: process.env.DB_NAME || 'bookmarketplace',
   // Optional SSL for hosted Postgres (Railway, Heroku, etc.)
   ssl: (process.env.DB_SSL === 'true' || process.env.NODE_ENV === 'production') ? { rejectUnauthorized: false } : false,
-  // Connection timeout
-  connectionTimeoutMillis: 5000,
+  // Connection timeout (increase to allow hosted DBs time to respond)
+  connectionTimeoutMillis: 30000,
   idleTimeoutMillis: 30000,
   max: 20
 });
