@@ -47,6 +47,11 @@ app.use(helmet({
   }
 }));
 app.use(cors({ origin: true }));
+// Simple request logger to help debug missing routes / timeouts
+app.use((req, res, next) => {
+  console.log(`➡️ ${req.method} ${req.originalUrl}`);
+  next();
+});
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -857,13 +862,20 @@ app.post('/students/login', async (req, res) => {
   try {
     const { phone, password } = req.body;
 
+    console.log('🔐 /students/login attempt for phone:', phone);
     const result = await pool.query('SELECT * FROM students WHERE phone = $1', [phone]);
+    console.log('/students/login - rows found:', result.rows.length);
 
-    if (result.rows.length === 0) return res.status(401).json({ error: 'Invalid credentials' });
+    if (result.rows.length === 0) {
+      console.warn('/students/login - no user for phone', phone);
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
 
     const student = result.rows[0];
+    const match = bcrypt.compareSync(password, student.password);
+    console.log('/students/login - bcrypt match:', match ? 'YES' : 'NO');
 
-    if (!bcrypt.compareSync(password, student.password)) {
+    if (!match) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
