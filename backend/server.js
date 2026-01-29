@@ -460,7 +460,7 @@ app.get('/orders', async (req, res) => {
     if (!phone) return res.status(400).json({ error: 'Phone required' });
 
     const result = await pool.query(
-      'SELECT orders.*, books.book_name FROM orders JOIN books ON orders.book_id = books.id WHERE orders.student_phone = $1',
+      'SELECT * FROM orders WHERE student_phone = $1 ORDER BY created_at DESC',
       [phone]
     );
 
@@ -476,7 +476,7 @@ app.get('/orders/student/:studentId', async (req, res) => {
     const { studentId } = req.params;
 
     const result = await pool.query(
-      'SELECT orders.*, books.book_name FROM orders JOIN books ON orders.book_id = books.id WHERE orders.student_id = $1',
+      'SELECT * FROM orders WHERE student_id = $1 ORDER BY created_at DESC',
       [studentId]
     );
 
@@ -492,16 +492,17 @@ app.get('/orders/shop/:shopId', async (req, res) => {
     const { shopId } = req.params;
     const { status } = req.query;
 
-    let sql = 'SELECT orders.*, books.book_name FROM orders JOIN books ON orders.book_id = books.id WHERE orders.shop_id = $1';
+    let sql = 'SELECT * FROM orders WHERE shop_id = $1';
     const params = [shopId];
 
     if (status) {
-      sql += ' AND orders.status = $2';
+      sql += ' AND order_status = $2';
       params.push(status);
     } else {
-      sql += ' AND orders.status != \'delivered\'';
+      sql += ' AND order_status != \'delivered\'';
     }
 
+    sql += ' ORDER BY created_at DESC';
     const result = await pool.query(sql, params);
     res.json(result.rows);
   } catch (err) {
@@ -516,12 +517,12 @@ app.put('/orders/:id', async (req, res) => {
     const { status } = req.body;
 
     if (status === 'delivered') {
-      await pool.query('UPDATE orders SET status = $1, payment_status = \'paid\' WHERE id = $2', [status, id]);
+      await pool.query('UPDATE orders SET order_status = $1, payment_status = \'paid\' WHERE id = $2', [status, id]);
     } else {
-      await pool.query('UPDATE orders SET status = $1 WHERE id = $2', [status, id]);
+      await pool.query('UPDATE orders SET order_status = $1 WHERE id = $2', [status, id]);
     }
 
-    const orderResult = await pool.query('SELECT student_id, book_id FROM orders WHERE id = $1', [id]);
+    const orderResult = await pool.query('SELECT student_id FROM orders WHERE id = $1', [id]);
     const order = orderResult.rows[0];
 
     if (order && order.student_id) {
@@ -531,7 +532,7 @@ app.put('/orders/:id', async (req, res) => {
       );
     }
 
-    res.json({ message: 'Order updated', book_id: order.book_id });
+    res.json({ message: 'Order updated' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -543,7 +544,7 @@ app.put('/orders/:id/cancel', async (req, res) => {
     const { id } = req.params;
 
     const result = await pool.query(
-      'UPDATE orders SET status = \'cancelled\' WHERE id = $1 AND status = \'pending\' RETURNING id',
+      'UPDATE orders SET order_status = \'cancelled\' WHERE id = $1 AND order_status = \'pending\' RETURNING id',
       [id]
     );
 
@@ -603,7 +604,7 @@ app.put('/orders/:id/status', async (req, res) => {
 
     const order = orderResult.rows[0];
 
-    await pool.query('UPDATE orders SET status = $1 WHERE id = $2', [status, id]);
+    await pool.query('UPDATE orders SET order_status = $1 WHERE id = $2', [status, id]);
 
     let message = '';
     if (status === 'confirmed') {
@@ -1192,7 +1193,7 @@ app.delete('/admin/students/:id', async (req, res) => {
 app.get('/admin/orders', async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT orders.*, books.book_name, students.name as student_name FROM orders JOIN books ON orders.book_id = books.id JOIN students ON orders.student_id = students.id'
+      'SELECT * FROM orders ORDER BY created_at DESC'
     );
     res.json(result.rows);
   } catch (err) {
